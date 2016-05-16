@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# MariaDB overrides for lib/databases/mysql
+
+function cleanup_mariadb {
+    stop_mariadb
+    apt_get purge -y mysql* mariadb*
+    sudo rm -rf /var/lib/mysql
+    sudo rm -rf /etc/mysql
+}
+
+function configure_mariadb {
+    local my_conf mysql slow_log
+    echo_summary "Configuring and starting MariaDB"
+
+    my_conf=/etc/mysql/my.cnf
+    mysql=mysql
+
+    sudo mysql -uroot -hlocalhost -e "GRANT ALL PRIVILEGES ON *.* TO '$DATABASE_USER'@'%' identified by '$DATABASE_PASSWORD';"
+    if [[ "$DATABASE_QUERY_LOGGING" == "True" ]]; then
+        echo_summary "Enabling MySQL query logging"
+        slow_log=/var/log/mariadb/mariadb-slow.log
+        sudo sed -e '/log.slow.queries/d' \
+            -e '/long.query.time/d' \
+            -e '/log.queries.not.using.indexes/d' \
+            -i $my_conf
+        # Turn on slow query log, log all queries (any query taking longer than
+        # 0 seconds) and log all non-indexed queries
+        iniset -sudo $my_conf mysqld slow-query-log 1
+        iniset -sudo $my_conf mysqld slow-query-log-file $slow_log
+        iniset -sudo $my_conf mysqld long-query-time 0
+        iniset -sudo $my_conf mysqld log-queries-not-using-indexes 1
+    fi
+    restart_service $mysql
+}
+
+function install_mariadb {
+    if [[ ! -e $HOME/.my.cnf ]]; then
+        cat <<EOF >$HOME/.my.cnf
+[client]
+user=$DATABASE_USER
+password=$DATABASE_PASSWORD
+host=$MYSQL_HOST
+EOF
+        chmod 0600 $HOME/.my.cnf
+    fi
+    if is_ubuntu; then
+        install_package mariadb-server
+    fi
+}
+
+function stop_mariadb {
+    stop_service mysql
+}
+
