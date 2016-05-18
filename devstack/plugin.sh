@@ -18,12 +18,12 @@ if is_service_enabled mysql && is_ubuntu; then
         install_mariadb
     }
 
-    if [[ "$1" == "stack" && "$2" == "install" ]]; then
-        echo_summary "Installing MariaDB"
-        install_mariadb
-    elif [[ "$1" == "stack" && "$2" == "pre-install" ]]; then
+    if [[ "$1" == "stack" && "$2" == "pre-install" ]]; then
         # nothing needed here
         :
+    elif [[ "$1" == "stack" && "$2" == "install" ]]; then
+        echo_summary "Installing MariaDB"
+        install_mariadb
     elif [[ "$1" == "stack" && "$2" == "post-config" ]]; then
         echo_summary "Configuring MariaDB"
         configure_mariadb

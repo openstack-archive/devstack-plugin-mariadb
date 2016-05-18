@@ -1,3 +1,10 @@
+================
+ MariaDB Plugin
+================
+
+This plugin enables MariaDB opensource flavor of MySQL for Ubuntu users on
+Devstack. It overrides functions at lib/databases/mysql.
+
 ======================
  Enabling in Devstack
 ======================
