@@ -23,8 +23,9 @@ function configure_mariadb {
     # Change bind-address from localhost (127.0.0.1) to any (::) and
     iniset -sudo $my_conf mysqld bind-address "$SERVICE_LISTEN_ADDRESS"
     iniset -sudo $my_conf mysqld sql_mode STRICT_ALL_TABLES
-    # Do not set InnoDB, XtraDB is the default (forked engine from percona)
-    #iniset -sudo $my_conf mysqld default-storage-engine InnoDB
+    iniset -sudo $my_conf mysqld default-storage-engine InnoDB
+    iniset -sudo $my_conf ignore_builtin_innodb
+    iniset -sudo $my_conf plugin_load innodb=ha_innodb.so
     iniset -sudo $my_conf mysqld max_connections 1024
     iniset -sudo $my_conf mysqld query_cache_type OFF
     iniset -sudo $my_conf mysqld query_cache_size 0
