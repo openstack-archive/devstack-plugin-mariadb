@@ -21,17 +21,17 @@ function configure_mariadb {
     # Now update ``my.cnf`` for some local needs and restart the mysql service
 
     # Change bind-address from localhost (127.0.0.1) to any (::) and
-    # set default db type to InnoDB
     iniset -sudo $my_conf mysqld bind-address "$SERVICE_LISTEN_ADDRESS"
     iniset -sudo $my_conf mysqld sql_mode STRICT_ALL_TABLES
-    iniset -sudo $my_conf mysqld default-storage-engine InnoDB
+    # Do not set InnoDB, XtraDB is the default (forked engine from percona)
+    #iniset -sudo $my_conf mysqld default-storage-engine InnoDB
     iniset -sudo $my_conf mysqld max_connections 1024
     iniset -sudo $my_conf mysqld query_cache_type OFF
     iniset -sudo $my_conf mysqld query_cache_size 0
 
     if [[ "$DATABASE_QUERY_LOGGING" == "True" ]]; then
         echo_summary "Enabling MySQL query logging"
-        slow_log=/var/log/mariadb/mariadb-slow.log
+        slow_log=/var/log/mysql/mysql-slow.log
         sudo sed -e '/log.slow.queries/d' \
             -e '/long.query.time/d' \
             -e '/log.queries.not.using.indexes/d' \
