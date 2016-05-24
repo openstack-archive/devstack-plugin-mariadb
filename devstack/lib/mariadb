@@ -24,14 +24,14 @@ function configure_mariadb {
     iniset -sudo $my_conf mysqld bind-address "$SERVICE_LISTEN_ADDRESS"
     iniset -sudo $my_conf mysqld sql_mode STRICT_ALL_TABLES
     iniset -sudo $my_conf mysqld default-storage-engine InnoDB
-    iniset -sudo $my_conf ignore_builtin_innodb
-    iniset -sudo $my_conf plugin_load innodb=ha_innodb.so
+    iniset -sudo $my_conf mysqld ignore_builtin_innodb 1
+    iniset -sudo $my_conf mysqld plugin_load innodb=ha_innodb.so
     iniset -sudo $my_conf mysqld max_connections 1024
     iniset -sudo $my_conf mysqld query_cache_type OFF
     iniset -sudo $my_conf mysqld query_cache_size 0
 
     if [[ "$DATABASE_QUERY_LOGGING" == "True" ]]; then
-        echo_summary "Enabling MySQL query logging"
+        echo_summary "Enabling MariaDB query logging"
         slow_log=/var/log/mysql/mysql-slow.log
         sudo sed -e '/log.slow.queries/d' \
             -e '/long.query.time/d' \
