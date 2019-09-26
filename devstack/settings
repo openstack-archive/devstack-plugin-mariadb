@@ -1,7 +1,0 @@
-# MariaDB on Ubuntu uses unix_socket IPC for root auth (localhost!=127.0.0.1)
-DATABASE_USER=stack
-
-# MARIADB_PLUGIN_DIR contains the path to devstack-plugin-glusterfs/devstack directory
-MARIADB_PLUGIN_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
-
-source $MARIADB_PLUGIN_DIR/lib/mariadb
